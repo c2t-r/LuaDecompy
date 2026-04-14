@@ -100,10 +100,12 @@ class Instruction:
   A: int
   B: int
   C: int
+  raw: int
 
   def __init__(self, type: InstructionType, name: str) -> None:
     self.type = type
     self.name = name
+    self.raw = 0
 
   # 'RK's are special in because can be a register or a konstant. a bitflag is read to determine which
   def __formatRK(self, rk: int) -> str:
@@ -419,7 +421,10 @@ class LuaUndump:
     # parse instructions
     num = self._get_uint()
     for i in range(num):
-      chunk.appendInstruction(_decode_instr(self._get_uint32()))
+      raw_instr = self._get_uint32()
+      instr = _decode_instr(raw_instr)
+      instr.raw = raw_instr
+      chunk.appendInstruction(instr)
 
     # get constants
     num = self._get_uint()

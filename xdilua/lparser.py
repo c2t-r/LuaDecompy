@@ -203,7 +203,7 @@ class LuaDecomp:
       return self.locals[indx]
 
     # otherwise, generate a local
-    self.locals[indx] = f"__unknLocal{self.unknownLocalCount}"
+    self.locals[indx] = f"__v{self.unknownLocalCount}"
     self.unknownLocalCount += 1
 
     return self.locals[indx]
@@ -300,24 +300,33 @@ class LuaDecomp:
 
   # walk & peak ahead NEWTABLE
   def __parseNewTable(self, indx: int) -> None:
-    # TODO: parse SETTABLE too?
-    tblOps = [Opcodes.LOADK, Opcodes.SETLIST]
-
-    instr = self.__getNextInstr()
     cachedRegs = {}
     tbl = "{"
-    while instr.opcode in tblOps:
+    while self.pc + 1 < len(self.chunk.instructions):
+      instr = self.__getNextInstr()
       if instr.opcode == Opcodes.LOADK:  # operate on registers
+        # table constructor elements are loaded into registers right after A.
+        # once that pattern is broken, stop consuming and let normal parsing continue.
+        if instr.A <= indx:
+          break
         cachedRegs[instr.A] = self.chunk.getConstant(instr.B).toCode()
       elif instr.opcode == Opcodes.SETLIST:
+        # only consume SETLIST instructions that belong to this NEWTABLE.
+        if instr.A != indx:
+          break
         numElems = instr.B
+        if numElems == 0:
+          raise Exception("SETLIST with B=0 in NEWTABLE is unsupported")
 
         for i in range(numElems):
-          tbl += f"{cachedRegs[instr.A + i + 1]}, "
-          del cachedRegs[instr.A + i + 1]
+          reg = instr.A + i + 1
+          if reg not in cachedRegs:
+            raise Exception(f"Missing cached table value for R[{reg}] while parsing NEWTABLE")
+          tbl += f"{cachedRegs.pop(reg)}, "
+      else:
+        break
 
       self.pc += 1
-      instr = self.__getNextInstr()
     tbl += "}"
 
     # i use forceLocal here even though i don't know *for sure* that the register is a local.
@@ -455,7 +464,7 @@ class LuaDecomp:
         # [ 52]      LOADK :   R[1]   K[1]               ; load 0.0 into R[1]
         # [ 53]    SETLIST :      0      1      2        ; sets list[51..51]
         numElems = instr.B
-        startAt = (instr.C - 1) * 50
+        startAt = (instr.C - 1) * 50 if instr.C > 0 else 0
         ident = self.__getLocal(instr.A)
 
         # set each index (TODO: make tables less verbose)
