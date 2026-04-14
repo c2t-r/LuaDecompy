@@ -498,7 +498,10 @@ class LuaUndump:
   def loadFile(self, luaCFile: str) -> Chunk:
     with open(luaCFile, "rb") as luac_file:
       bytecode = luac_file.read()
-      return self.decode_rawbytecode(bytecode)
+      return self.loadBytes(bytecode)
+
+  def loadBytes(self, bytecode: bytes | bytearray | array.array) -> Chunk:
+    return self.decode_rawbytecode(bytecode)
 
   def print_dissassembly(self) -> None:
     self.rootChunk.print()
