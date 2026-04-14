@@ -96,13 +96,14 @@ def readRKasK(rk: int) -> int:
 
 
 class Instruction:
+  opcode: int
+  A: int
+  B: int
+  C: int
+
   def __init__(self, type: InstructionType, name: str) -> None:
     self.type = type
     self.name = name
-    self.opcode: int = None
-    self.A: int = None
-    self.B: int = None
-    self.C: int = None
 
   # 'RK's are special in because can be a register or a konstant. a bitflag is read to determine which
   def __formatRK(self, rk: int) -> str:
@@ -175,6 +176,7 @@ class Constant:
   # format the constant so that it is parsable by lua
   def toCode(self) -> str:
     if self.type == ConstType.STRING:
+      assert isinstance(self.data, str)
       return '"' + self.data + '"'
     elif self.type == ConstType.BOOL:
       if self.data:
@@ -236,7 +238,7 @@ class Chunk:
         return local_var
 
     # there's no local information (may have been stripped)
-    return None
+    raise Exception(f"Local not found for PC {pc}")
 
   def getConstant(self, indx: int) -> Constant:
     return self.constants[indx]
@@ -352,8 +354,9 @@ def _encode_instr(instr: Instruction) -> int:
 
 
 class LuaUndump:
+  rootChunk: Chunk
+
   def __init__(self) -> None:
-    self.rootChunk: Chunk = None
     self.index = 0
 
   def _loadBlock(self, sz: int) -> bytearray:
@@ -411,7 +414,6 @@ class LuaUndump:
     # get constants
     num = self._get_uint()
     for i in range(num):
-      constant: Constant = None
       type = self._get_byte()
 
       if type == 0:  # nil
@@ -460,7 +462,7 @@ class LuaUndump:
     if not rawbytecode[0:4] == _LUAMAGIC:
       raise Exception("Lua Bytecode expected!")
 
-    bytecode = array.array("b", rawbytecode)
+    bytecode = bytearray(rawbytecode)
     return self.decode_bytecode(bytecode)
 
   def decode_bytecode(self, bytecode: bytes | bytearray) -> Chunk:
@@ -561,9 +563,11 @@ class LuaDump:
         self._set_byte(1)
         self._set_byte(1 if constant.data else 0)
       elif constant.type == ConstType.NUMBER:  # number
+        assert isinstance(constant.data, float)
         self._set_byte(3)
         self._set_double(constant.data)
       elif constant.type == ConstType.STRING:  # string
+        assert isinstance(constant.data, str)
         self._set_byte(4)
         self._set_string(constant.data)
       else:

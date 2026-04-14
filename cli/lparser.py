@@ -140,7 +140,7 @@ class LuaDecomp:
       self.lines.append(_Line(startPC, endPC, self.src, len(self.scope)))
     self.src = ""
 
-  def __insertStatement(self, pc: int) -> None:
+  def __insertStatement(self, pc: int) -> int | None:
     # insert current statement into lines at pc location
     for i in range(len(self.lines)):
       if self.lines[i].startPC <= pc and self.lines[i].endPC >= pc:
@@ -281,6 +281,7 @@ class LuaDecomp:
       # it's a repeat until loop, insert 'repeat' at the jumpTo location
       self.__addExpr("repeat")
       insertedLine = self.__insertStatement(self.pc + jmp)
+      assert insertedLine is not None
 
       # add scope to every line in-between
       for i in range(insertedLine + 1, len(self.lines) - 1):
@@ -340,11 +341,15 @@ class LuaDecomp:
         else:
           self.__setReg(instr.A, "true")
       case Opcodes.GETGLOBAL:
-        self.__setReg(instr.A, self.chunk.getConstant(instr.B).data)
+        data = self.chunk.getConstant(instr.B).data
+        assert isinstance(data, str)
+        self.__setReg(instr.A, data)
       case Opcodes.GETTABLE:
         self.__setReg(instr.A, self.__getReg(instr.B) + "[" + self.__readRK(instr.C) + "]")
       case Opcodes.SETGLOBAL:
-        self.__addExpr(self.chunk.getConstant(instr.B).data + " = " + self.__getReg(instr.A))
+        data = self.chunk.getConstant(instr.B).data
+        assert isinstance(data, str)
+        self.__addExpr(data + " = " + self.__getReg(instr.A))
         self.__endStatement()
       case Opcodes.SETTABLE:
         self.__addExpr(self.__getReg(instr.A) + "[" + self.__readRK(instr.B) + "] = " + self.__readRK(instr.C))
