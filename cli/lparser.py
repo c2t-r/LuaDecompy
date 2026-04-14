@@ -6,7 +6,7 @@
     An experimental bytecode decompiler.
 '''
 
-from lundump import Chunk, Constant, Instruction, Opcodes, whichRK, readRKasK
+from cli.lundump import Chunk, Constant, Instruction, Opcodes, whichRK, readRKasK
 
 class _Scope:
     def __init__(self, startPC: int, endPC: int):
