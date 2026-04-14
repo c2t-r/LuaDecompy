@@ -1,4 +1,14 @@
-# LuaDecompy
+# XDI LuaDecompy
+
+An experimental decompiler for Lua compiled with XDI format
+
+## Usage
+
+```shell
+uvx --from git+https://github.com/c2t-r/LuaDecompy xdilua <input_file>
+```
+
+---
 
 An experimental Lua 5.1 dump decompiler (typically dumped using `luac -o <out.luac> <script.lua>`).
 
