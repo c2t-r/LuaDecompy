@@ -5,7 +5,7 @@ An experimental decompiler for Lua compiled with XDI format
 ## Usage
 
 ```shell
-uvx --from git+https://github.com/c2t-r/LuaDecompy xdilua <input_file>
+uvx --from git+https://github.com/c2t-r/LuaDecompy xdilua -p <input_file>
 ```
 
 ---
