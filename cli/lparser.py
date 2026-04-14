@@ -70,7 +70,7 @@ class LuaDecomp:
       # define params
       for i in range(self.chunk.numParams):
         # add param to function prototype (also make a local in the register if it doesn't exist)
-        functionProto += ("%s, " if i + 1 < self.chunk.numParams else "%s") % self.__makeLocalIdentifier(i)
+        functionProto += f"{self.__makeLocalIdentifier(i)}, " if i + 1 < self.chunk.numParams else f"{self.__makeLocalIdentifier(i)}"
 
         # mark local as defined
         self.__addSetTraceback(i)
@@ -94,7 +94,7 @@ class LuaDecomp:
 
     for line in self.lines:
       if self.annotateLines:
-        fullSrc += "-- PC: %d to PC: %d\n" % (line.startPC, line.endPC)
+        fullSrc += f"-- PC: {line.startPC} to PC: {line.endPC}\n"
       fullSrc += ((" " * self.indexWidth) * (line.scope + self.scopeOffset)) + line.src + "\n"
 
     return fullSrc
@@ -198,7 +198,7 @@ class LuaDecomp:
       return self.locals[indx]
 
     # otherwise, generate a local
-    self.locals[indx] = "__unknLocal%d" % self.unknownLocalCount
+    self.locals[indx] = f"__unknLocal{self.unknownLocalCount}"
     self.unknownLocalCount += 1
 
     return self.locals[indx]
@@ -444,7 +444,7 @@ class LuaDecomp:
 
         # set each index (TODO: make tables less verbose)
         for i in range(numElems):
-          self.__addExpr("%s[%d] = %s" % (ident, (startAt + i + 1), self.__getReg(instr.A + i + 1)))
+          self.__addExpr(f"{ident}[{startAt + i + 1}] = {self.__getReg(instr.A + i + 1)}")
           self.__endStatement()
       case Opcodes.CLOSURE:
         proto = LuaDecomp(self.chunk.protos[instr.B], headChunk=False, scopeOffset=len(self.scope))

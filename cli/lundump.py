@@ -112,54 +112,54 @@ class Instruction:
       return "R[" + str(rk) + "]"
 
   def toString(self) -> str:
-    instr = "%10s" % self.name
+    instr = f"{self.name:>10s}"
     regs = ""
 
     if self.type == InstructionType.ABC:
       # by default, treat them as registers
-      A = "%d" % self.A
-      B = "%d" % self.B
-      C = "%d" % self.C
+      A = f"{self.A}"
+      B = f"{self.B}"
+      C = f"{self.C}"
 
       # these opcodes have RKs for B & C
       if self.opcode in _RKBCInstr:
-        A = "R[%d]" % self.A
+        A = f"R[{self.A}]"
         B = self.__formatRK(self.B)
         C = self.__formatRK(self.C)
       elif self.opcode in _RKCInstr:  # just for C
-        A = "R[%d]" % self.A
+        A = f"R[{self.A}]"
         C = self.__formatRK(self.C)
 
-      regs = "%6s %6s %6s" % (A, B, C)
+      regs = f"{A:>6s} {B:>6s} {C:>6s}"
     elif self.type == InstructionType.ABx or self.type == InstructionType.AsBx:
-      A = "R[%d]" % self.A
-      B = "%d" % self.B
+      A = f"R[{self.A}]"
+      B = f"{self.B}"
 
       if self.opcode in _KBx:
-        B = "K[%d]" % self.B
+        B = f"K[{self.B}]"
 
-      regs = "%6s %6s" % (A, B)
+      regs = f"{A:>6s} {B:>6s}"
 
     return f"{instr} : {regs}"
 
   def getAnnotation(self, chunk) -> str:
     if self.opcode == Opcodes.MOVE:
-      return "move R[%d] into R[%d]" % (self.B, self.A)
+      return f"move R[{self.B}] into R[{self.A}]"
     elif self.opcode == Opcodes.LOADK:
-      return "load %s into R[%d]" % (chunk.getConstant(self.B).toCode(), self.A)
+      return f"load {chunk.getConstant(self.B).toCode()} into R[{self.A}]"
     elif self.opcode == Opcodes.GETGLOBAL:
-      return "move _G[%s] into R[%d]" % (chunk.getConstant(self.B).toCode(), self.A)
+      return f"move _G[{chunk.getConstant(self.B).toCode()}] into R[{self.A}]"
     elif self.opcode == Opcodes.ADD:
-      return "add %s to %s, place into R[%d]" % (self.__formatRK(self.C), self.__formatRK(self.B), self.A)
+      return f"add {self.__formatRK(self.C)} to {self.__formatRK(self.B)}, place into R[{self.A}]"
     elif self.opcode == Opcodes.SUB:
-      return "sub %s from %s, place into R[%d]" % (self.__formatRK(self.C), self.__formatRK(self.B), self.A)
+      return f"sub {self.__formatRK(self.C)} from {self.__formatRK(self.B)}, place into R[{self.A}]"
     elif self.opcode == Opcodes.MUL:
-      return "mul %s to %s, place into R[%d]" % (self.__formatRK(self.C), self.__formatRK(self.B), self.A)
+      return f"mul {self.__formatRK(self.C)} to {self.__formatRK(self.B)}, place into R[{self.A}]"
     elif self.opcode == Opcodes.DIV:
-      return "div %s from %s, place into R[%d]" % (self.__formatRK(self.C), self.__formatRK(self.B), self.A)
+      return f"div {self.__formatRK(self.C)} from {self.__formatRK(self.B)}, place into R[{self.A}]"
     elif self.opcode == Opcodes.CONCAT:
       count = self.C - self.B + 1
-      return "concat %d values from R[%d] to R[%d], store into R[%d]" % (count, self.B, self.C, self.A)
+      return f"concat {count} values from R[{self.B}] to R[{self.C}], store into R[{self.A}]"
     else:
       return ""
 
@@ -244,15 +244,15 @@ class Chunk:
   def print(self) -> None:
     print("\n==== [[" + str(self.name) + "'s constants]] ====\n")
     for i in range(len(self.constants)):
-      print("%d: %s" % (i, self.constants[i].toString()))
+      print(f"{i}: {self.constants[i].toString()}")
 
     print("\n==== [[" + str(self.name) + "'s locals]] ====\n")
     for i in range(len(self.locals)):
-      print("R[%d]: %s" % (i, self.locals[i].name))
+      print(f"R[{i}]: {self.locals[i].name}")
 
     print("\n==== [[" + str(self.name) + "'s dissassembly]] ====\n")
     for i in range(len(self.instructions)):
-      print("[%3d] %-40s ; %s" % (i, self.instructions[i].toString(), self.instructions[i].getAnnotation(self)))
+      print(f"[{i:3d}] {self.instructions[i].toString():<40s} ; {self.instructions[i].getAnnotation(self)}")
 
     if len(self.protos) > 0:
       print("\n==== [[" + str(self.name) + "'s protos]] ====\n")
@@ -423,7 +423,7 @@ class LuaUndump:
       elif type == 4:  # string
         constant = Constant(ConstType.STRING, self._get_string())
       else:
-        raise Exception("Unknown Datatype! [%d]" % type)
+        raise Exception(f"Unknown Datatype! [{type}]")
 
       chunk.appendConstant(constant)
 
