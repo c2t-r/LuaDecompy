@@ -6,12 +6,13 @@ from cli import lparser, lundump
 
 def main() -> None:
   if len(sys.argv) < 2:
-    print(f"Usage: {sys.argv[0]} <input_file>", file=sys.stderr)
+    print(f"Usage: {sys.argv[0]} <xdi_file>", file=sys.stderr)
     sys.exit(1)
 
   lc = lundump.LuaUndump()
   print(sys.argv[1])
   chunk = lc.loadFile(sys.argv[1])
+  print("[*] format: XDI")
 
   lc.print_dissassembly()
 

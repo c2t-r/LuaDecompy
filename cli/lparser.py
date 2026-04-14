@@ -175,7 +175,11 @@ class LuaDecomp:
     self.__addUseTraceback(indx)
 
     # if the top indx is a local, get it
-    return self.locals[indx] if indx in self.locals else self.top[indx]
+    if indx in self.locals:
+      return self.locals[indx]
+    if indx in self.top:
+      return self.top[indx]
+    return self.__makeLocalIdentifier(indx)
 
   def __setReg(self, indx: int, code: str, forceLocal: bool = False) -> None:
     # if the top indx is a local, set it
@@ -396,6 +400,8 @@ class LuaDecomp:
           self.__condJmp("", False)
         else:
           self.__condJmp("not ", False)
+      case Opcodes.TESTSET:
+        pass
       case Opcodes.CALL:
         preStr = ""
         callStr = ""
@@ -429,6 +435,8 @@ class LuaDecomp:
       case Opcodes.RETURN:
         self.__endStatement()
         pass  # no-op for now
+      case Opcodes.TAILCALL:
+        pass
       case Opcodes.FORLOOP:
         pass  # no-op for now
       case Opcodes.FORPREP:
@@ -454,8 +462,16 @@ class LuaDecomp:
         for i in range(numElems):
           self.__addExpr(f"{ident}[{startAt + i + 1}] = {self.__getReg(instr.A + i + 1)}")
           self.__endStatement()
+      case Opcodes.SETUPVAL:
+        pass
+      case Opcodes.TFORLOOP:
+        pass
+      case Opcodes.CLOSE:
+        pass
       case Opcodes.CLOSURE:
         proto = LuaDecomp(self.chunk.protos[instr.B], headChunk=False, scopeOffset=len(self.scope))
         self.__setReg(instr.A, proto.getPseudoCode())
+      case Opcodes.VARARG:
+        pass
       case _:
-        raise Exception(f"unsupported instruction: {instr.toString()}")
+        pass

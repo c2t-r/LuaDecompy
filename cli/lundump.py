@@ -21,43 +21,43 @@ class InstructionType(Enum):
 
 
 class Opcodes(IntEnum):
-  MOVE = 0
-  LOADK = 1
-  LOADBOOL = 2
-  LOADNIL = 3
-  GETUPVAL = 4
-  GETGLOBAL = 5
-  GETTABLE = 6
-  SETGLOBAL = 7
-  SETUPVAL = 8
-  SETTABLE = 9
-  NEWTABLE = 10
-  SELF = 11
-  ADD = 12
-  SUB = 13
-  MUL = 14
-  DIV = 15
-  MOD = 16
-  POW = 17
-  UNM = 18
-  NOT = 19
-  LEN = 20
-  CONCAT = 21
-  JMP = 22
-  EQ = 23
-  LT = 24
-  LE = 25
-  TEST = 26
-  TESTSET = 27
-  CALL = 28
-  TAILCALL = 29
-  RETURN = 30
-  FORLOOP = 31
-  FORPREP = 32
-  TFORLOOP = 33
-  SETLIST = 34
-  CLOSE = 35
-  CLOSURE = 36
+  LOADNIL = 0
+  MUL = 1
+  SETTABLE = 2
+  LE = 3
+  CLOSE = 4
+  NEWTABLE = 5
+  LOADK = 6
+  POW = 7
+  GETTABLE = 8
+  TEST = 9
+  LT = 10
+  EQ = 11
+  MOVE = 12
+  SETGLOBAL = 13
+  GETUPVAL = 14
+  LOADBOOL = 15
+  DIV = 16
+  RETURN = 17
+  ADD = 18
+  GETGLOBAL = 19
+  CONCAT = 20
+  CALL = 21
+  TAILCALL = 22
+  CLOSURE = 23
+  FORLOOP = 24
+  SETLIST = 25
+  FORPREP = 26
+  TFORLOOP = 27
+  SETUPVAL = 28
+  JMP = 29
+  MOD = 30
+  NOT = 31
+  SELF = 32
+  UNM = 33
+  TESTSET = 34
+  LEN = 35
+  SUB = 36
   VARARG = 37
 
 
@@ -82,7 +82,7 @@ _RKBCInstr = [
 _RKCInstr = [Opcodes.GETTABLE, Opcodes.SELF]
 _KBx = [Opcodes.LOADK, Opcodes.GETGLOBAL, Opcodes.SETGLOBAL]
 
-_LUAMAGIC = b"\x1bLua"
+_XDIMAGIC = b"\x01XDI"
 
 
 # is an 'RK' value a K? (result is true for K, false for R)
@@ -263,43 +263,43 @@ class Chunk:
 
 
 instr_lookup_tbl = [
-  Instruction(InstructionType.ABC, "MOVE"),
-  Instruction(InstructionType.ABx, "LOADK"),
-  Instruction(InstructionType.ABC, "LOADBOOL"),
   Instruction(InstructionType.ABC, "LOADNIL"),
-  Instruction(InstructionType.ABC, "GETUPVAL"),
-  Instruction(InstructionType.ABx, "GETGLOBAL"),
-  Instruction(InstructionType.ABC, "GETTABLE"),
-  Instruction(InstructionType.ABx, "SETGLOBAL"),
-  Instruction(InstructionType.ABC, "SETUPVAL"),
-  Instruction(InstructionType.ABC, "SETTABLE"),
-  Instruction(InstructionType.ABC, "NEWTABLE"),
-  Instruction(InstructionType.ABC, "SELF"),
-  Instruction(InstructionType.ABC, "ADD"),
-  Instruction(InstructionType.ABC, "SUB"),
   Instruction(InstructionType.ABC, "MUL"),
-  Instruction(InstructionType.ABC, "DIV"),
-  Instruction(InstructionType.ABC, "MOD"),
-  Instruction(InstructionType.ABC, "POW"),
-  Instruction(InstructionType.ABC, "UNM"),
-  Instruction(InstructionType.ABC, "NOT"),
-  Instruction(InstructionType.ABC, "LEN"),
-  Instruction(InstructionType.ABC, "CONCAT"),
-  Instruction(InstructionType.AsBx, "JMP"),
-  Instruction(InstructionType.ABC, "EQ"),
-  Instruction(InstructionType.ABC, "LT"),
+  Instruction(InstructionType.ABC, "SETTABLE"),
   Instruction(InstructionType.ABC, "LE"),
+  Instruction(InstructionType.ABC, "CLOSE"),
+  Instruction(InstructionType.ABC, "NEWTABLE"),
+  Instruction(InstructionType.ABx, "LOADK"),
+  Instruction(InstructionType.ABC, "POW"),
+  Instruction(InstructionType.ABC, "GETTABLE"),
   Instruction(InstructionType.ABC, "TEST"),
-  Instruction(InstructionType.ABC, "TESTSET"),
+  Instruction(InstructionType.ABC, "LT"),
+  Instruction(InstructionType.ABC, "EQ"),
+  Instruction(InstructionType.ABC, "MOVE"),
+  Instruction(InstructionType.ABx, "SETGLOBAL"),
+  Instruction(InstructionType.ABC, "GETUPVAL"),
+  Instruction(InstructionType.ABC, "LOADBOOL"),
+  Instruction(InstructionType.ABC, "DIV"),
+  Instruction(InstructionType.ABC, "RETURN"),
+  Instruction(InstructionType.ABC, "ADD"),
+  Instruction(InstructionType.ABx, "GETGLOBAL"),
+  Instruction(InstructionType.ABC, "CONCAT"),
   Instruction(InstructionType.ABC, "CALL"),
   Instruction(InstructionType.ABC, "TAILCALL"),
-  Instruction(InstructionType.ABC, "RETURN"),
+  Instruction(InstructionType.ABx, "CLOSURE"),
   Instruction(InstructionType.AsBx, "FORLOOP"),
+  Instruction(InstructionType.ABC, "SETLIST"),
   Instruction(InstructionType.AsBx, "FORPREP"),
   Instruction(InstructionType.ABC, "TFORLOOP"),
-  Instruction(InstructionType.ABC, "SETLIST"),
-  Instruction(InstructionType.ABC, "CLOSE"),
-  Instruction(InstructionType.ABx, "CLOSURE"),
+  Instruction(InstructionType.ABC, "SETUPVAL"),
+  Instruction(InstructionType.AsBx, "JMP"),
+  Instruction(InstructionType.ABC, "MOD"),
+  Instruction(InstructionType.ABC, "NOT"),
+  Instruction(InstructionType.ABC, "SELF"),
+  Instruction(InstructionType.ABC, "UNM"),
+  Instruction(InstructionType.ABC, "TESTSET"),
+  Instruction(InstructionType.ABC, "LEN"),
+  Instruction(InstructionType.ABC, "SUB"),
   Instruction(InstructionType.ABC, "VARARG"),
 ]
 
@@ -315,21 +315,26 @@ def set_bits(num: int, data: int, p: int, s: int) -> int:
 
 
 def _decode_instr(data: int) -> Instruction:
-  opcode = get_bits(data, 0, 6)
+  opcode = get_bits(data, 26, 6)
+  if opcode >= len(instr_lookup_tbl):
+    raise Exception(f"Unknown XDI opcode! [{opcode}]")
+
   template = instr_lookup_tbl[opcode]
   instr = Instruction(template.type, template.name)
 
-  # i read the lopcodes.h file to get these bit position and sizes.
-  instr.opcode = opcode
-  instr.A = get_bits(data, 6, 8)  # starts after POS_OP + SIZE_OP (6), with a size of 8
+  instr.opcode = Opcodes(opcode)
+  instr.A = get_bits(data, 0, 8)
 
   if instr.type == InstructionType.ABC:
-    instr.B = get_bits(data, 23, 9)  # starts after POS_C + SIZE_C (23), with a size of 9
-    instr.C = get_bits(data, 14, 9)  # starts after POS_A + SIZE_A (14), with a size of 9
+    instr.B = get_bits(data, 8, 9)
+    instr.C = get_bits(data, 17, 9)
+    # XDI encoding flips B/C semantics for table-read family opcodes.
+    if opcode in (Opcodes.GETTABLE, Opcodes.SELF):
+      instr.B, instr.C = instr.C, instr.B
   elif instr.type == InstructionType.ABx:
-    instr.B = get_bits(data, 14, 18)  # starts after POS_A + SIZE_A (14), with a size of 18
+    instr.B = get_bits(data, 8, 18)
   elif instr.type == InstructionType.AsBx:
-    instr.B = get_bits(data, 14, 18) - 131071  # Bx is now signed, so just sub half of the MAX_UINT for 18 bits
+    instr.B = get_bits(data, 8, 18) - 131071
 
   return instr
 
@@ -338,17 +343,16 @@ def _decode_instr(data: int) -> Instruction:
 def _encode_instr(instr: Instruction) -> int:
   data = 0
 
-  # encode instruction (basically, do the inverse of _decode_instr)
-  data = set_bits(data, instr.opcode, 0, 6)
-  data = set_bits(data, instr.A, 6, 8)
-
+  # encode instruction (inverse of XDI decode bit layout)
+  data = set_bits(data, int(instr.opcode), 26, 6)
+  data = set_bits(data, instr.A, 0, 8)
   if instr.type == InstructionType.ABC:
-    data = set_bits(data, instr.B, 23, 9)
-    data = set_bits(data, instr.C, 14, 9)
+    data = set_bits(data, instr.B, 8, 9)
+    data = set_bits(data, instr.C, 17, 9)
   elif instr.type == InstructionType.ABx:
-    data = set_bits(data, instr.B, 14, 18)
+    data = set_bits(data, instr.B, 8, 18)
   elif instr.type == InstructionType.AsBx:
-    data = set_bits(data, instr.B + 131071, 14, 18)
+    data = set_bits(data, instr.B + 131071, 8, 18)
 
   return data
 
@@ -387,12 +391,18 @@ class LuaUndump:
     return struct.unpack(order, self._loadBlock(self.l_number_size))[0]
 
   def _get_string(self) -> str:
+    return self._get_xdi_string()
+
+  def _get_xdi_string(self) -> str:
     size = self._get_size_t()
     if size == 0:
       return ""
+    if size < 10:
+      raise Exception(f"Malformed XDI string size! [{size}]")
 
-    # [:-1] to remove the NULL terminator
-    return ("".join(chr(x) for x in self._loadBlock(size)))[:-1]
+    # XDI stores (payload + NULL + 10-byte overhead); loader reads size-10 bytes.
+    payload = self._loadBlock(size - 10)
+    return bytes(payload[:-1] if payload[-1] == 0 else payload).decode("utf-8", errors="replace")
 
   def decode_chunk(self) -> Chunk:
     chunk = Chunk()
@@ -459,8 +469,8 @@ class LuaUndump:
 
   def decode_rawbytecode(self, rawbytecode: bytes | bytearray | array.array) -> Chunk:
     # bytecode sanity checks
-    if not rawbytecode[0:4] == _LUAMAGIC:
-      raise Exception("Lua Bytecode expected!")
+    if not rawbytecode[0:4] == _XDIMAGIC:
+      raise Exception("XDI bytecode expected!")
 
     bytecode = bytearray(rawbytecode)
     return self.decode_bytecode(bytecode)
@@ -500,7 +510,7 @@ class LuaDump:
     self.bytecode = bytearray()
 
     # header info
-    self.vm_version = 0x51
+    self.vm_version = 0x01
     self.bytecode_format = 0x00
     self.big_endian = False
 
@@ -534,9 +544,10 @@ class LuaDump:
     self._writeBlock(struct.pack(order, f))
 
   def _set_string(self, string: str) -> None:
-    self._set_size_t(len(string) + 1)
+    self._set_size_t(len(string) + 11)
     self._writeBlock(string.encode("utf-8"))
     self._set_byte(0x00)  # write null terminator
+    self._writeBlock(b"\x00" * 10)
 
   def _dumpChunk(self, chunk: Chunk) -> None:
     # write meta info
@@ -596,7 +607,7 @@ class LuaDump:
       self._set_string(u)
 
   def _dumpHeader(self) -> None:
-    self._writeBlock(_LUAMAGIC)
+    self._writeBlock(_XDIMAGIC)
 
     # write header info
     self._set_byte(self.vm_version)
