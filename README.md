@@ -8,6 +8,15 @@ An experimental decompiler for Lua compiled with XDI format
 uvx --from git+https://github.com/c2t-r/LuaDecompy xdilua -p <input_file>
 ```
 
+```python
+from xdilua import LuaDecomp, LuaUndump
+
+undump = LuaUndump()
+chunk = undump.loadFile("input.xdi")
+decomp = LuaDecomp(chunk)
+print(decomp.getPseudoCode())
+```
+
 ---
 
 An experimental Lua 5.1 dump decompiler (typically dumped using `luac -o <out.luac> <script.lua>`).

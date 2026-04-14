@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 
-from cli import lparser, lundump
+from xdilua import lparser, lundump
 
 
 def _build_parser() -> argparse.ArgumentParser:
