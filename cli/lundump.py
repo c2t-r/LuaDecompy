@@ -86,12 +86,12 @@ _LUAMAGIC = b"\x1bLua"
 
 
 # is an 'RK' value a K? (result is true for K, false for R)
-def whichRK(rk: int):
+def whichRK(rk: int) -> bool:
   return (rk & (1 << 8)) > 0
 
 
 # read an RK as a K
-def readRKasK(rk: int):
+def readRKasK(rk: int) -> int:
   return rk & ~(1 << 8)
 
 
@@ -142,7 +142,7 @@ class Instruction:
 
     return f"{instr} : {regs}"
 
-  def getAnnotation(self, chunk) -> str:
+  def getAnnotation(self, chunk: "Chunk") -> str:
     if self.opcode == Opcodes.MOVE:
       return f"move R[{self.B}] into R[{self.A}]"
     elif self.opcode == Opcodes.LOADK:
@@ -165,7 +165,7 @@ class Instruction:
 
 
 class Constant:
-  def __init__(self, type: ConstType, data) -> None:
+  def __init__(self, type: ConstType, data: str | float | bool | None) -> None:
     self.type = type
     self.data = data
 
@@ -173,7 +173,7 @@ class Constant:
     return f"[{self.type.name}] {str(self.data)}"
 
   # format the constant so that it is parsable by lua
-  def toCode(self):
+  def toCode(self) -> str:
     if self.type == ConstType.STRING:
       return '"' + self.data + '"'
     elif self.type == ConstType.BOOL:
@@ -218,7 +218,7 @@ class Chunk:
   def appendConstant(self, const: Constant) -> None:
     self.constants.append(const)
 
-  def appendProto(self, proto) -> None:
+  def appendProto(self, proto: "Chunk") -> None:
     self.protos.append(proto)
 
   def appendLine(self, line: int) -> None:
@@ -231,9 +231,9 @@ class Chunk:
     self.upvalues.append(upval)
 
   def findLocal(self, pc: int) -> Local:
-    for l in self.locals:
-      if l.start <= pc and l.end >= pc:
-        return l
+    for local_var in self.locals:
+      if local_var.start <= pc and local_var.end >= pc:
+        return local_var
 
     # there's no local information (may have been stripped)
     return None
@@ -303,12 +303,12 @@ instr_lookup_tbl = [
 
 
 # at [p]osition, with [s]ize of bits
-def get_bits(num: int, p: int, s: int):
+def get_bits(num: int, p: int, s: int) -> int:
   return (num >> p) & (~((~0) << s))
 
 
 # set bits from data to num at [p]osition, with [s]ize of bits
-def set_bits(num, data, p, s) -> int:
+def set_bits(num: int, data: int, p: int, s: int) -> int:
   return (num & (~((~((~0) << s)) << p))) | ((data << p) & ((~((~0) << s)) << p))
 
 
@@ -356,7 +356,7 @@ class LuaUndump:
     self.rootChunk: Chunk = None
     self.index = 0
 
-  def _loadBlock(self, sz) -> bytearray:
+  def _loadBlock(self, sz: int) -> bytearray:
     if self.index + sz > len(self.bytecode):
       raise Exception("Malformed bytecode!")
 
@@ -455,7 +455,7 @@ class LuaUndump:
 
     return chunk
 
-  def decode_rawbytecode(self, rawbytecode):
+  def decode_rawbytecode(self, rawbytecode: bytes | bytearray | array.array) -> Chunk:
     # bytecode sanity checks
     if not rawbytecode[0:4] == _LUAMAGIC:
       raise Exception("Lua Bytecode expected!")
@@ -463,7 +463,7 @@ class LuaUndump:
     bytecode = array.array("b", rawbytecode)
     return self.decode_bytecode(bytecode)
 
-  def decode_bytecode(self, bytecode):
+  def decode_bytecode(self, bytecode: bytes | bytearray) -> Chunk:
     self.bytecode = bytecode
 
     # aligns index, skips header
@@ -483,7 +483,7 @@ class LuaUndump:
     self.rootChunk = self.decode_chunk()
     return self.rootChunk
 
-  def loadFile(self, luaCFile):
+  def loadFile(self, luaCFile: str) -> Chunk:
     with open(luaCFile, "rb") as luac_file:
       bytecode = luac_file.read()
       return self.decode_rawbytecode(bytecode)
@@ -548,8 +548,8 @@ class LuaDump:
 
     # write instructions
     self._set_uint(len(chunk.instructions))
-    for l in chunk.instructions:
-      self._set_uint32(_encode_instr(l))
+    for inst in chunk.instructions:
+      self._set_uint32(_encode_instr(inst))
 
     # write constants
     self._set_uint(len(chunk.constants))
@@ -576,15 +576,15 @@ class LuaDump:
 
     # write line numbers
     self._set_uint(len(chunk.lineNums))
-    for l in chunk.lineNums:
-      self._set_uint(l)
+    for line_num in chunk.lineNums:
+      self._set_uint(line_num)
 
     # write locals
     self._set_uint(len(chunk.locals))
-    for l in chunk.locals:
-      self._set_string(l.name)
-      self._set_uint(l.start)
-      self._set_uint(l.end)
+    for local_var in chunk.locals:
+      self._set_string(local_var.name)
+      self._set_uint(local_var.start)
+      self._set_uint(local_var.end)
 
     # write upvals
     self._set_uint(len(chunk.upvalues))

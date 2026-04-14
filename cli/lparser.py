@@ -70,7 +70,8 @@ class LuaDecomp:
       # define params
       for i in range(self.chunk.numParams):
         # add param to function prototype (also make a local in the register if it doesn't exist)
-        functionProto += f"{self.__makeLocalIdentifier(i)}, " if i + 1 < self.chunk.numParams else f"{self.__makeLocalIdentifier(i)}"
+        l_id = self.__makeLocalIdentifier(i)
+        functionProto += f"{l_id}, " if i + 1 < self.chunk.numParams else f"{l_id}"
 
         # mark local as defined
         self.__addSetTraceback(i)
@@ -150,7 +151,7 @@ class LuaDecomp:
     self.src = ""
 
   # walks traceback, if local wasn't set before, the local needs to be defined
-  def __needsDefined(self, reg) -> bool:
+  def __needsDefined(self, reg: int) -> bool:
     for _, trace in self.traceback.items():
       if reg in trace.sets:
         return False
@@ -426,9 +427,11 @@ class LuaDecomp:
       case Opcodes.FORLOOP:
         pass  # no-op for now
       case Opcodes.FORPREP:
-        self.__addExpr(
-          f"for {self.__getLocal(instr.A + 3)} = {self.__getReg(instr.A)}, {self.__getReg(instr.A + 1)}, {self.__getReg(instr.A + 2)} "
-        )
+        local_expr = self.__getLocal(instr.A + 3)
+        reg_a = self.__getReg(instr.A)
+        reg_a_1 = self.__getReg(instr.A + 1)
+        reg_a_2 = self.__getReg(instr.A + 2)
+        self.__addExpr(f"for {local_expr} = {reg_a}, {reg_a_1}, {reg_a_2} ")
         self.__startScope("do", self.pc, instr.B)
       case Opcodes.SETLIST:
         # LFIELDS_PER_FLUSH (50) is the number of elements that *should* have been set in the list in the *last* SETLIST
