@@ -1,15 +1,16 @@
-# XDI LuaDecompy
+# SoC LuaDecompy
 
-An experimental decompiler for Lua compiled with XDI format
+An experimental decompiler for SoC Lua binary  
+SoC Lua binary -> XFC -> XDI (lua bytecode) -> Lua
 
 ## Usage
 
 ```shell
-uvx --from git+https://github.com/c2t-r/LuaDecompy xdilua -p <input_file>
+uvx --from git+https://github.com/c2t-r/LuaDecompy soclua -p <input_file>
 ```
 
 ```python
-from xdilua import LuaDecomp, LuaUndump
+from soclua import LuaDecomp, LuaUndump
 
 undump = LuaUndump()
 chunk = undump.loadFile("input.xdi")

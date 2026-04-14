@@ -6,7 +6,7 @@ Depends on lundump.py for lua dump deserialization.
 An experimental bytecode decompiler.
 """
 
-from xdilua.lundump import Chunk, Instruction, Opcodes, readRKasK, whichRK
+from soclua.lundump import Chunk, Instruction, Opcodes, readRKasK, whichRK
 
 
 class _Scope:

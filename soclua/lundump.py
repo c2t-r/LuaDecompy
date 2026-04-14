@@ -13,6 +13,8 @@ import array
 import struct
 from enum import Enum, IntEnum, auto
 
+from soclua import crypto
+
 
 class InstructionType(Enum):
   ABC = (auto(),)
@@ -505,8 +507,10 @@ class LuaUndump:
       bytecode = luac_file.read()
       return self.loadBytes(bytecode)
 
-  def loadBytes(self, bytecode: bytes | bytearray | array.array) -> Chunk:
-    return self.decode_rawbytecode(bytecode)
+  def loadBytes(self, bytecode: bytes) -> Chunk:
+    xfc = crypto.to_xfc(bytecode)
+    xdi = crypto.to_xdi(xfc)
+    return self.decode_rawbytecode(xdi)
 
   def print_dissassembly(self) -> None:
     self.rootChunk.print()

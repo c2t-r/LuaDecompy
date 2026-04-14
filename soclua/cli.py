@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import argparse
 
-from xdilua import lparser, lundump
+from soclua import lparser, lundump
 
 
 def _build_parser() -> argparse.ArgumentParser:
-  parser = argparse.ArgumentParser(prog="xdilua")
+  parser = argparse.ArgumentParser(prog="soclua")
   parser.add_argument("input_file", help="path to XDI bytecode")
   parser.add_argument(
     "-p",
